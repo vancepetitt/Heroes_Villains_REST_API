@@ -18,15 +18,22 @@ def supers_list(request):
     supers = Super.objects.all()
 
     if request.method == 'GET':
-        supers = supers.filter(super_type__id=super_type_param) #filters based on super_type and takes into account the id (foreign key)
+        
+        if super_type_param == 'hero':
+            supers = supers.filter(super_type__id=1) #filters based on super_type and takes into account the id (foreign key)
+        elif super_type_param == 'villain':
+            supers = supers.filter(super_type__id=2)
+        else:
+            supers = Super.objects.all()
+        
         serializer = SuperSerializer(supers, many = True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
         serializer = SuperSerializer(data=request.data) #populated the serializer with the incoming data
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['GET', 'PUT', 'DELETE']) #used when looking for a specific super or an object in the class, via their pk. URLS end in /pk/
 def super_detail(request,pk):
@@ -35,13 +42,13 @@ def super_detail(request,pk):
 
     if request.method == 'GET':
         serializer = SuperSerializer(super)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'PUT':
         serializer = SuperSerializer(super, data=request.data) #takes incoming serializer data for pk, and replaces with new values from API.
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'DELETE':
         super.delete()
