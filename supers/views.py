@@ -14,8 +14,11 @@ from supers.serializers import SuperSerializer
 @api_view(['GET', 'POST']) #used for getting an entire super object
 def supers_list(request):
 
+    super_type_param = request.query_params.get('super_type') #finds what "super_type" parameter is in the URL.
+    supers = Super.objects.all()
+
     if request.method == 'GET':
-        supers = Super.objects.all()
+        supers = supers.filter(super_type__id=super_type_param) #filters based on super_type and takes into account the id (foreign key)
         serializer = SuperSerializer(supers, many = True)
         return Response(serializer.data)
 
