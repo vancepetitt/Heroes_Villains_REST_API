@@ -7,7 +7,7 @@ from .models import SuperType
 from super_types.serializers import SuperTypeSerializer
 
 # Create your views here.
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def super_types_list(request):
 
     super_types = SuperType.objects.all()
@@ -16,3 +16,9 @@ def super_types_list(request):
         
         serializer = SuperTypeSerializer(super_types, many = True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    elif request.method == 'POST':
+        serializer = SuperTypeSerializer(data=request.data) #populated the serializer with the incoming data
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
