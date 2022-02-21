@@ -25,7 +25,7 @@ def supers_list(request):
         serializer.save()
         return Response(serializer.data)
 
-@api_view(['GET']) #used when looking for a specific super or an object in the class, via their pk. URLS end in /pk/
+@api_view(['GET', 'PUT',]) #used when looking for a specific super or an object in the class, via their pk. URLS end in /pk/
 def super_detail(request,pk):
 
     super = get_object_or_404(Super,pk=pk)
@@ -34,5 +34,8 @@ def super_detail(request,pk):
         serializer = SuperSerializer(super)
         return Response(serializer.data)
 
-    else:
-        pass
+    elif request.method == 'PUT':
+        serializer = SuperSerializer(super, data=request.data) #takes incoming serializer data for pk, and replaces with new values from API.
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
