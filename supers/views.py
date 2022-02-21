@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 from .serializers import SuperSerializer
 from .models import Super
 from supers.serializers import SuperSerializer
@@ -8,6 +9,8 @@ from supers.serializers import SuperSerializer
 
 # Create your views here.
 #@api_view is included in Django REST framework, allows for GET,POST,PUT,DELETE functionality.
+
+
 @api_view(['GET'])
 def supers_list(request):
 
@@ -15,3 +18,16 @@ def supers_list(request):
     serializer = SuperSerializer(supers, many = True)
 
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def super_detail(request,pk):
+
+    super = get_object_or_404(Super,pk=pk)
+
+    if request.method == 'GET':
+        serializer = SuperSerializer(super)
+        return Response(serializer.data)
+
+    else:
+        pass
