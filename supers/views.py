@@ -25,7 +25,7 @@ def supers_list(request):
         serializer.save()
         return Response(serializer.data)
 
-@api_view(['GET', 'PUT',]) #used when looking for a specific super or an object in the class, via their pk. URLS end in /pk/
+@api_view(['GET', 'PUT', 'DELETE']) #used when looking for a specific super or an object in the class, via their pk. URLS end in /pk/
 def super_detail(request,pk):
 
     super = get_object_or_404(Super,pk=pk)
@@ -39,3 +39,7 @@ def super_detail(request,pk):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        super.delete()
+        return Response(status.HTTP_204_NO_CONTENT) #delete method already in framework, returns correct status message for display.
