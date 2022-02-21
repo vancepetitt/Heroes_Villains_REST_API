@@ -11,16 +11,21 @@ from supers.serializers import SuperSerializer
 #@api_view is included in Django REST framework, allows for GET,POST,PUT,DELETE functionality.
 
 
-@api_view(['GET'])
+@api_view(['GET', 'POST']) #used for getting an entire super object
 def supers_list(request):
 
-    supers = Super.objects.all()
-    serializer = SuperSerializer(supers, many = True)
+    if request.method == 'GET':
+        supers = Super.objects.all()
+        serializer = SuperSerializer(supers, many = True)
+        return Response(serializer.data)
 
-    return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = SuperSerializer(data=request.data) #populated the serializer with the incoming data
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
-
-@api_view(['GET'])
+@api_view(['GET']) #used when looking for a specific super or an object in the class, via their pk. URLS end in /pk/
 def super_detail(request,pk):
 
     super = get_object_or_404(Super,pk=pk)
